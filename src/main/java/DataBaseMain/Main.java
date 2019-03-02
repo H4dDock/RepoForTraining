@@ -1,8 +1,6 @@
 package DataBaseMain;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -10,11 +8,29 @@ public class Main {
 
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            Connection connection = DriverManager.getConnection(URL,"root","BeNzin99");
-            System.out.println("Connection established");
-        } catch (SQLException e) {
-            e.printStackTrace();
         } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        try(Connection connection = DriverManager.getConnection(URL,"root","BeNzin99");
+            Statement statement = connection.createStatement()) {
+            System.out.println("Connection established");
+
+            statement.addBatch("INSERT INTO Units(Name, email, money) value ('Georg', 'GrgM@gmail.com', 30)");
+            statement.addBatch("INSERT INTO Units(Name, email, money) value ('Gercog', 'DarkLord@gmail.com', 25000)");
+            statement.addBatch("INSERT INTO Units(Name, email, money) value ('Alexey', 'Leha@gmail.com', 138)");
+
+            statement.executeBatch();
+            statement.clearBatch();
+
+            ResultSet resultSets = statement.executeQuery("select * from Units");
+
+            while(resultSets.next()){
+                System.out.println("["+resultSets.getInt("id")+"] "+resultSets.getString("name")
+                +", mail: "+resultSets.getString("email")+", cash: "+resultSets.getString("money"));
+            }
+
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
