@@ -4,5 +4,3 @@ This is my training repository. Sometimes I'm write simple code to keep everythi
 This is a relax before i go sleep.
 
 # ToDo
-1) Unit class.
-2) Class for JDBC stuff.
