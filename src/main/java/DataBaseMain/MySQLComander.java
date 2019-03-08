@@ -5,18 +5,24 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class MySQLComander {
+    private static MySQLComander instance = new MySQLComander();
     private Connection connection;
     private Statement statement;
     private PreparedStatement preparedStatement;
 
-    public MySQLComander(String URL, String driver, String user, String password) {
+    private MySQLComander() {
         try {
-            Class.forName(driver);
-            connection = DriverManager.getConnection(URL, user, password);
+            Class.forName("com.mysql.jdbc.Driver");
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/JDBCTraining",
+                    "root", "BeNzin99");
             statement = connection.createStatement();
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public static MySQLComander GetInstance(){
+        return instance;
     }
 
     public void InsertIntoUnitsDB(String DBName, String name, String email, long money) throws SQLException {
@@ -27,12 +33,14 @@ public class MySQLComander {
         preparedStatement.execute();
     }
 
-    public void ShowDB(String DBName) throws SQLException {
+    public StringBuffer StringDB(String DBName) throws SQLException {
+        StringBuffer out = new StringBuffer("");
         ResultSet rs = statement.executeQuery("SELECT * from "+DBName);
         while (rs.next()){
-            System.out.println(new Units(rs.getInt("id"), rs.getString("name"),
-                    rs.getString("email"),rs.getLong("money")).toString());
+            out.append(new Units(rs.getInt("id"), rs.getString("name"),
+                    rs.getString("email"),rs.getLong("money")).toString()).append("\n");
         }
+        return out;
     }
 
     public List<String> GetArrOfNames(String DBName) throws SQLException {
