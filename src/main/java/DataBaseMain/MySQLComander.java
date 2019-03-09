@@ -33,6 +33,32 @@ public class MySQLComander {
         preparedStatement.execute();
     }
 
+    public void DeleteById(String DBName, int id) throws SQLException {
+        preparedStatement = connection.prepareStatement("Delete from " + DBName + "Where id = ?");
+        preparedStatement.setInt(1,id);
+        preparedStatement.execute();
+    }
+
+    public void DeleteById(String DBName, String name) throws SQLException {
+        preparedStatement = connection.prepareStatement("Delete from " + DBName + "Where name = ?");
+        preparedStatement.setString(1,name);
+        preparedStatement.execute();
+    }
+
+    public void UpdateNameById(String DBName, String newName, int id) throws SQLException {
+        preparedStatement = connection.prepareStatement("UPDATE " + DBName +" SET name = ? where id = ?");
+        preparedStatement.setString(1, newName);
+        preparedStatement.setInt(2, id);
+        preparedStatement.execute();
+    }
+
+    public void UpdateMoneyById(String DBName, long newMoney, int id) throws SQLException {
+        preparedStatement = connection.prepareStatement("UPDATE " + DBName +" SET money = ? where id = ?");
+        preparedStatement.setLong(1, newMoney);
+        preparedStatement.setInt(2, id);
+        preparedStatement.execute();
+    }
+
     public StringBuffer StringDB(String DBName) throws SQLException {
         StringBuffer out = new StringBuffer("");
         ResultSet rs = statement.executeQuery("SELECT * from "+DBName);
