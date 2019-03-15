@@ -13,8 +13,6 @@ public class Main {
         MySQLComander mySQLComander = MySQLComander.GetInstance();
 
         try {
-            //mySQLComander.InsertIntoUnitsDB("Units","Mishel","DeLacost@gmail.com",5100);
-            //mySQLComander.ShowDB("Units");
             List<String> names = mySQLComander.GetArrOfNames("Units");
             System.out.println(names.stream().filter((x)->x.length() < 10).sorted().collect(Collectors.toList()));
         } catch (SQLException e) {

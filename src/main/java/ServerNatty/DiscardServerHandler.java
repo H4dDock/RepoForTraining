@@ -1,7 +1,8 @@
 package ServerNatty;
 
 import DataBaseMain.MySQLComander;
-import io.netty.buffer.ByteBuf;
+import DataBaseMain.Units;
+import DataBaseMain.UnitsDAO;
 
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
@@ -19,28 +20,17 @@ public class DiscardServerHandler extends ChannelInboundHandlerAdapter {
 
         String[] command = (msg.toString()).replace("\n"," ").split(" ");
         MySQLComander mySQLComander = MySQLComander.GetInstance();
+        UnitsDAO unitsDAO = new UnitsDAO();
 
         switch(command[0]){
             case ("add"):
-                mySQLComander.InsertIntoUnitsDB(command[1],command[2],command[3],Integer.parseInt(command[4]));
+                unitsDAO.AddToTable(new Units(command[1],command[2],Integer.parseInt(command[3])));
                 break;
-            case("GetName"):
-                ctx.channel().writeAndFlush(mySQLComander.GetArrOfNames(command[1]).toString());
+            case("GetNameById"):
+                ctx.channel().writeAndFlush(unitsDAO.GetUnit(Integer.parseInt(command[1])).toString()+"\n");
                 break;
             case("StringDB"):
-                ctx.channel().writeAndFlush(mySQLComander.StringDB(command[1]));
-                break;
-            case("DeleteById"):
-                mySQLComander.DeleteById(command[1],Integer.parseInt(command[2]));
-                break;
-            case("DeleteByName"):
-                mySQLComander.DeleteById(command[1],command[2]);
-                break;
-            case("UpdateName"):
-                mySQLComander.UpdateNameById(command[1],command[2],Integer.parseInt(command[3]));
-                break;
-            case("UpdateMoney"):
-                mySQLComander.UpdateMoneyById(command[1],Integer.parseInt(command[2]),Integer.parseInt(command[3]));
+                ctx.channel().writeAndFlush(unitsDAO.ShowTable().toString());
                 break;
             case("Help"):
                 ctx.channel().writeAndFlush("add NameDB Name Email Money - for add new entry\n" +
@@ -52,7 +42,7 @@ public class DiscardServerHandler extends ChannelInboundHandlerAdapter {
         }
 
         ctx.channel().writeAndFlush(
-                Unpooled.buffer().writeBytes("Ok ".getBytes())
+                Unpooled.buffer().writeBytes("Ok \n".getBytes())
         );
     }
 

@@ -4,6 +4,10 @@ import java.sql.*;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * @deprecated
+ */
+
 public class MySQLComander {
     private static MySQLComander instance = new MySQLComander();
     private Connection connection;

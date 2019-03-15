@@ -1,13 +1,19 @@
 package DataBaseMain;
 
 public class Units {
-    private final int id;
+    private int id;
     private final String name;
     private final String email;
     private final long money;
 
     public Units(int id, String name, String email, long money) {
         this.id = id;
+        this.name = name;
+        this.email = email;
+        this.money = money;
+    }
+
+    public Units(String name, String email, long money) {
         this.name = name;
         this.email = email;
         this.money = money;
