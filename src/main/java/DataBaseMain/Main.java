@@ -1,23 +1,40 @@
 package DataBaseMain;
 
 import ServerNatty.Server;
-
-import java.math.BigInteger;
-import java.sql.*;
-import java.util.List;
-import java.util.stream.Collectors;
+import freemarker.template.Configuration;
+import io.undertow.Handlers;
+import io.undertow.Undertow;
+import io.undertow.server.handlers.form.EagerFormParsingHandler;
+import io.undertow.server.handlers.form.FormData;
+import io.undertow.server.handlers.form.FormDataParser;
+import io.undertow.server.handlers.resource.ClassPathResourceManager;
+import io.undertow.server.handlers.resource.ResourceHandler;
+import io.undertow.util.Headers;
 
 public class Main {
     public static void main(String[] args) throws Exception {
 
-        MySQLComander mySQLComander = MySQLComander.GetInstance();
+        Undertow undertowServer = Undertow.builder()
+                .addHttpListener(8081,"localhost")
+                .setHandler(Handlers.path()
+                        .addPrefixPath("/", new ResourceHandler(new ClassPathResourceManager(Main.class.getClassLoader(),"html")))
+                        .addExactPath("form", new EagerFormParsingHandler().setNext(httpServerExchange -> {
+                            FormData form = httpServerExchange.getAttachment(FormDataParser.FORM_DATA);
+                            FormData.FormValue nameOfNewUnit = form.getFirst("name");
+                            FormData.FormValue emailOfNewUnit = form.getFirst("email");
+                            FormData.FormValue cashOfNewUnit = form.getFirst("cash");
 
-        try {
-            List<String> names = mySQLComander.GetArrOfNames("Units");
-            System.out.println(names.stream().filter((x)->x.length() < 10).sorted().collect(Collectors.toList()));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+                            httpServerExchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/html");
+                            UnitsDAO unitsDAO = new UnitsDAO();
+
+                            System.out.println(new Units(nameOfNewUnit.getValue(), emailOfNewUnit.getValue(),Integer.parseInt(cashOfNewUnit.getValue())).toString());
+
+                            unitsDAO.AddToTable(new Units(nameOfNewUnit.getValue(), emailOfNewUnit.getValue(),Integer.parseInt(cashOfNewUnit.getValue())));
+                            httpServerExchange.getResponseSender().send("Data accepted");
+
+                        }))).build();
+
+        undertowServer.start();
 
         int port = 8080;
         if (args.length > 0) {
@@ -25,6 +42,5 @@ public class Main {
         }
 
         new Server(port).run();
-
     }
 }
