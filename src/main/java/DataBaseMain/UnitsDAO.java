@@ -48,4 +48,12 @@ public class UnitsDAO {
         }
         return output;
     }
+
+    public void RemoveFromTable(int id) throws SQLException {
+        try(Connection connection = GetConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM Units WHERE id = ?")){
+            preparedStatement.setInt(1,id);
+            preparedStatement.execute();
+        }
+    }
 }

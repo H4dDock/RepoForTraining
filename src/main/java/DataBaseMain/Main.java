@@ -1,38 +1,28 @@
 package DataBaseMain;
 
+import DataBaseMain.Handlers.AddToTableHandler;
+import DataBaseMain.Handlers.RemoveTableHandler;
 import ServerNatty.Server;
 import freemarker.template.Configuration;
 import io.undertow.Handlers;
 import io.undertow.Undertow;
-import io.undertow.server.handlers.form.EagerFormParsingHandler;
-import io.undertow.server.handlers.form.FormData;
-import io.undertow.server.handlers.form.FormDataParser;
 import io.undertow.server.handlers.resource.ClassPathResourceManager;
 import io.undertow.server.handlers.resource.ResourceHandler;
-import io.undertow.util.Headers;
+
 
 public class Main {
     public static void main(String[] args) throws Exception {
 
+        Configuration cfg = new ResourceProvider().freeMarker();
+
         Undertow undertowServer = Undertow.builder()
                 .addHttpListener(8081,"localhost")
                 .setHandler(Handlers.path()
-                        .addPrefixPath("/", new ResourceHandler(new ClassPathResourceManager(Main.class.getClassLoader(),"html")))
-                        .addExactPath("form", new EagerFormParsingHandler().setNext(httpServerExchange -> {
-                            FormData form = httpServerExchange.getAttachment(FormDataParser.FORM_DATA);
-                            FormData.FormValue nameOfNewUnit = form.getFirst("name");
-                            FormData.FormValue emailOfNewUnit = form.getFirst("email");
-                            FormData.FormValue cashOfNewUnit = form.getFirst("cash");
-
-                            httpServerExchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/html");
-                            UnitsDAO unitsDAO = new UnitsDAO();
-
-                            System.out.println(new Units(nameOfNewUnit.getValue(), emailOfNewUnit.getValue(),Integer.parseInt(cashOfNewUnit.getValue())).toString());
-
-                            unitsDAO.AddToTable(new Units(nameOfNewUnit.getValue(), emailOfNewUnit.getValue(),Integer.parseInt(cashOfNewUnit.getValue())));
-                            httpServerExchange.getResponseSender().send("Data accepted");
-
-                        }))).build();
+                        .addPrefixPath("add", new ResourceHandler(new ClassPathResourceManager(Main.class.getClassLoader(),"html/add.html")))
+                        .addPrefixPath("remove", new ResourceHandler(new ClassPathResourceManager(Main.class.getClassLoader(), "html/remove.html")))
+                        .addExactPath("added", new AddToTableHandler())
+                        .addExactPath("removed", new RemoveTableHandler()))
+                .build();
 
         undertowServer.start();
 
@@ -43,4 +33,5 @@ public class Main {
 
         new Server(port).run();
     }
+
 }
