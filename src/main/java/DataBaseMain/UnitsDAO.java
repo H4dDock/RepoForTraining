@@ -1,6 +1,8 @@
 package DataBaseMain;
 
 import java.sql.*;
+import java.util.LinkedList;
+import java.util.List;
 
 public class UnitsDAO {
 
@@ -19,6 +21,24 @@ public class UnitsDAO {
                         ,rs.getString("email"), rs.getLong("money"));
 
         }
+    }
+
+    public List<Units> GetAllUnits() throws SQLException {
+        LinkedList<Units> output = new LinkedList<>();
+
+        try(Connection connection = GetConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT id, name, email, money from Units")) {
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while(rs.next()){
+                output.add(new Units(rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        rs.getLong("money")));
+            }
+        }
+
+        return output;
     }
 
     public void AddToTable(Units unit) throws SQLException {

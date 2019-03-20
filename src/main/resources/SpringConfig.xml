@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="addToTableHandler" class="DataBaseMain.Handlers.AddToTableHandler"/>
+    <bean id="removeTableHandler" class="DataBaseMain.Handlers.RemoveTableHandler"/>
+
+    <bean id="showDBHandler" class="DataBaseMain.Handlers.ShowDBHandler">
+        <constructor-arg name="unitsDAO" ref="unitsDAO"/>
+        <constructor-arg name="cfg" ref="freeMarkerConfiguration"/>
+    </bean>
+
+    <bean id="unitsDAO" class="DataBaseMain.UnitsDAO"/>
+    <bean id="freeMarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+        <property name="templateLoaderPath" value="/templates/"/>
+    </bean>
+    <bean id="freeMarkerConfiguration" class="freemarker.template.Configuration" factory-bean="freeMarkerConfig" factory-method="getConfiguration" />
+
+
+</beans>
